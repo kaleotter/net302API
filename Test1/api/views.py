@@ -1,27 +1,36 @@
-from django.shortcuts import render
 from django.contrib.auth.models import User,Group
-from rest_framework import viewsets
 from api.serializers import UserSerializer, GroupSerializer
+
+#Imports
+from rest_framework import generics, permissions
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
 
 
 
 # Create your views here.
 
 
-
-class UserViewSet (viewsets.ModelViewSet):
-    """
-    Api endpoint for viewing or editing a user
-    """
-    queryset= User.objects.all().order_by('-date_joined')
+class UserList (generics.ListCreateAPIView):
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+    queryset= User.objects.all()
+    serializer_class=UserSerializer
+    
+    
+class UserDetails(generics.RetrieveAPIView):
+    permission_classes=[permissions.IsAuthenticated, TokenHasReadWriteScope]
+    queryset=User.objects.all()
     serializer_class= UserSerializer
     
+class GroupList(generics.ListAPIView):
+    permission_classes=[permissions.IsAuthenticated, TokenHasScope]
+    required_scopes=['groups']
+    queryset = Group.objects.all()
+    serializer_class=GroupSerializer
+    
 
-class GroupViewSet(viewsets.ModelViewSet):
-    """
-    API endpoint for viewing or editing groups
-    """
-   
-    queryset=Group.objects.all()
-    serializer_class=GroupSerializer 
-
+    
+    
+    
+    
+    
+    
