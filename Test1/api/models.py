@@ -1,7 +1,6 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
-from unittest.util import _MAX_LENGTH
 
 # Create your models here.
 
@@ -11,11 +10,16 @@ class Driver (models.Model):
     drivers_licence_number = models.CharField(max_length=30)
     taxi_licence_number=models.CharField(max_length=30)
     driver_photo=models.ImageField()
+
+
+class Profile (models.Model):
+    profile_id = models.AutoField(primary_key = True)
+    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, unique=True)
+    dob = models.DateField()
     address_1=models.CharField(max_length=60)
     address_2=models.CharField(max_length=60)
     address_3=models.CharField(max_length=60)
     postcode = models.CharField(max_length=8)
-
     
 class Car (models.Model):
     car_id = models.AutoField(primary_key=True)

@@ -7,6 +7,7 @@ Created on 6 Nov 2018
 
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
+from .models import Car, Driver, Flight, Job
 
 
 class UserSerializer (serializers.ModelSerializer):
@@ -21,4 +22,8 @@ class GroupSerializer(serializers.ModelSerializer):
     class Meta:
         model = Group
         fields = ('name',)
+        
+        
+
+
         
