@@ -1,28 +1,29 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 # Create your models here.
 
 class Driver (models.Model):
     user_id=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     driver_id = models.AutoField(primary_key=True)
-    drivers_licence_number = models.CharField(max_length=30)
-    taxi_licence_number=models.CharField(max_length=30)
-    driver_photo=models.ImageField()
+
 
 
 class Profile (models.Model):
-    profile_id = models.AutoField(primary_key = True)
-    user_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, unique=True)
+    user_id = models.OneToOneField(User, on_Delete=models.CASCADE)
     dob = models.DateField()
     address_1=models.CharField(max_length=60)
     address_2=models.CharField(max_length=60)
     address_3=models.CharField(max_length=60)
     postcode = models.CharField(max_length=8)
+    is_driver = models.BooleanField(default=False)
+    drivers_licence_number = models.CharField(max_length=30, null=False)
+    taxi_licence_number=models.CharField(max_length=30, null =False)
+    driver_photo=models.ImageField(null=False)
     
 class Car (models.Model):
-    car_id = models.AutoField(primary_key=True)
     model = models.CharField(max_length=100)
     colour = models.CharField(max_length=50)
     number_plate = models.CharField(max_length=10)
@@ -36,7 +37,6 @@ class Car (models.Model):
 
     
 class Flight (models.Model):
-    flight_id=models.AutoField(primary_key=True)
     flightnumber=models.CharField(max_length=10)
     flight_origin = models.CharField(max_length=100, null=False)
     flight_origin_IATA = models.CharField(max_length=5, null=False)

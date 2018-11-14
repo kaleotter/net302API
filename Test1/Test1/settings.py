@@ -133,7 +133,7 @@ STATIC_URL = '/static/'
 OAUTH2_PROVIDER = {
     #this is the list of availiable scopes
     'SCOPES':{
-        'read':'Read Scope', 'write':'Write scope', 'groups':'Access to your groups'
+        'read':'Read Scope', 'write':'Write scope', 'groups':'Access to your groups', 'customer':'service customers','drivers':'drivers'
         }
     }
 
