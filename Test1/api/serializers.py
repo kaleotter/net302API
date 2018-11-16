@@ -53,7 +53,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     
     def updateCustomer(self, instance, validated_data):
         """
-        Update and return an existing Profile instance, given correctily Validated data
+        Update and return an existing Profile instance, given correctly Validated data
         """
         
         instance.user_id = validated_data.get('user_id', instance.user_id)
@@ -83,3 +83,31 @@ class ProfileSerializer(serializers.ModelSerializer):
         
         instance.save()
         return instance
+    
+    
+    class FlightSerializer(serializers.ModelSerializer):
+        model=Flight
+        
+        id = serializers.IntegerField(read_only=True)
+        flight_number = serializers.CharField(max_length=10)
+        origin_airport = serializers.CharField(max_length=100)
+        origin_IATA = serializiers.CharField(max_length=10)
+        destination_terminal = serializers.CharField(max_length=5)
+        destination = serializers.CharField(max_length=100)
+        destination_terminal = serializers.CharField(max_length=5)
+        destination_IATA = serializers.CharField(max_length=10)
+        departure = serializers.DateTimeField()
+        arrival = serializers.DateTimeField()
+        
+    def create(self, validated_data):
+        """
+        Create and return a new User Flight instance, given correctly validated data
+        """
+            
+        return flight.objects.Create()
+       
+    def update (self, instance, validated_data):
+        """
+        Update and return an existing Flight instance, given correctly Validated data
+        """
+        

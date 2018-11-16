@@ -44,16 +44,16 @@ class Car (models.Model):
     
 class Flight (models.Model):
     flightnumber=models.CharField(max_length=10)
-    flight_origin = models.CharField(max_length=100, null=False)
-    flight_origin_IATA = models.CharField(max_length=5, null=False)
-    flight_destination = models.CharField(max_length=100, null=False)
-    flight_destination_IATA = models.CharField(max_length=5, null=False)
-    flight_departure = models.DateTimeField(null=False)
-    flight_arrival = models.DateTimeField(null=False)
-    current_eta = models.DateTimeField(null=False)
+    origin = models.CharField(max_length=100, null=False)
+    origin_terminal = models.CharField(max_length=5, null=False)
+    origin_IATA = models.CharField(max_length=5, null=False)
+    destination = models.CharField(max_length=100, null=False)
+    destination_terminal=models.CharField(max_length=5, null=False)
+    destination_IATA = models.CharField(max_length=5, null=False)
+    departure = models.DateTimeField(null=False)
+    arrival = models.DateTimeField(null=False)
     
-class Job (models.Model):
-    # customer_id = 
+class Job (models.Model): 
     driver_id = models.ForeignKey(User, on_delete=models.CASCADE)
     customer_id=models.ForeignKey(User, on_delete=models.CASCADE)
     flight_id = models.ForeignKey(Flight, on_delete=models.CASCADE)
