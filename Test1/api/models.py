@@ -53,6 +53,7 @@ class Flight (models.Model):
     departure = models.DateTimeField(null=False)
     arrival = models.DateTimeField(null=False)
     
+    
 class Job (models.Model): 
     driver_id = models.ForeignKey(User, on_delete=models.CASCADE)
     customer_id=models.ForeignKey(User, on_delete=models.CASCADE)

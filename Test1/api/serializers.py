@@ -76,7 +76,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         instance.address_2 = validated_data.get('address_2', instance.address_2)
         instance.address_3 = validated_data.get('address_3', instance.address_3)
         instance.postcode = validated_data.get('postcode', instance.postcode)
-        instance.is_driver = True
+        instance.is_driver = validated_data.get('is_driver', instance.is_driver)
         instance.drivers_licence_number=validated_data.get('drivers_licence',instance.drivers_licence_number)
         instance.taxi_licence_number=validated_data.get('taxi_licence'), instance.taxi_licence_number
         
@@ -92,7 +92,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         flight_number = serializers.CharField(max_length=10)
         origin_airport = serializers.CharField(max_length=100)
         origin_IATA = serializiers.CharField(max_length=10)
-        destination_terminal = serializers.CharField(max_length=5)
+        origin_terminal = serializers.CharField(max_length=5)
         destination = serializers.CharField(max_length=100)
         destination_terminal = serializers.CharField(max_length=5)
         destination_IATA = serializers.CharField(max_length=10)
@@ -110,4 +110,15 @@ class ProfileSerializer(serializers.ModelSerializer):
         """
         Update and return an existing Flight instance, given correctly Validated data
         """
+        instance.flight_number = validated_data.get('flight_number'),instance.flight_number
+        instance.origin_airport = validated_data.get('origin_airport'),instance.origin_airport
+        instance.origin_IATA = validated_data.get('origin_IATA'),instance.origin_IATA
+        instance.origin_terminal = validated_data.get('origin_terminal'),instance.origin_terminal
+        instance.destination = validated_data.get('destination'),instance.destination
+        instance.destination_terminal = validated_data.get('destination_terminal'),instance.destination_terminal
+        instance.destination_IATA = validated_data.get('destination_iata'), instance.destination
+        instance.departure = validated_data.get('departure'), instance.departure
+        instance.arrival = validated_data.get('arrival'), instance.arrival
         
+        instance.save()
+        return instance
