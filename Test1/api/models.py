@@ -21,12 +21,12 @@ class Profile (models.Model):
     driver_photo=models.ImageField()
     
     @receiver(post_save, sender=User)
-    def create_profile (sender, instance, created, **kwargs):
+    def create_profile (self, sender, instance, created, **kwargs):
         if created:
-            profile.objects.create(user=instance)
+            Profile.objects.create(user=instance)
             
     @receiver(post_save, sender=User)
-    def update_profile(sender, instance, **kwargs):
+    def update_profile(self, sender, instance, **kwargs):
         instance.profile.save()
     
 class Car (models.Model):
@@ -55,14 +55,14 @@ class Flight (models.Model):
     
     
 class Job (models.Model): 
-    driver_id = models.ForeignKey(User, on_delete=models.CASCADE)
-    customer_id=models.ForeignKey(User, on_delete=models.CASCADE)
+    driver_id = models.ForeignKey(User, on_delete=models.CASCADE, related_name='driver')
+    customer_id=models.ForeignKey(User, on_delete=models.CASCADE, related_name='customer')
     flight_id = models.ForeignKey(Flight, on_delete=models.CASCADE)
     pickup_time = models.DateTimeField(null=False)
     direction= models.BooleanField(null=False) #1 for a pickup and 2 for a drop-off
-    distance= models.DecimalField() #distance in miles/km? 
-    subtotal= models.DecimalField() #Probably (distance*Price per distance unit*)+booking fee+extras
-    total = models.DecimalField() #probably (subtotal+Taxes as applicable) 
+    distance= models.FloatField() #distance in miles/km? 
+    subtotal= models.FloatField() #Probably (distance*Price per distance unit*)+booking fee+extras
+    total = models.FloatField() #probably (subtotal+Taxes as applicable) 
     
     
         

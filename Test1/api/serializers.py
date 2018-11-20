@@ -8,8 +8,6 @@ Created on 6 Nov 2018
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from .models import Car, Flight, Job, Profile
-from aifc import data
-from test.test_audioop import datas
 
 
 class UserSerializer (serializers.ModelSerializer):
@@ -32,15 +30,15 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model=Profile
         id = serializers.IntegerField(read_only=True)
-        user_id = serializers.Integerfield()
+        user_id = serializers.IntegerField()
         dob = serializers.DateField(required=True)
         address_1 = serializers.CharField(max_length=60)
         address_2 = serializers.CharField(max_length=60)
         address_3 = serializers.CharField(max_length=60)
-        postcode = serializers.CharField(Max_length=10)
+        postcode = serializers.CharField(max_length=10)
         is_driver =serializers.BooleanField()
         drivers_licence_number= serializers.CharField(max_length=30)
-        taxi_licence_number=models.CharField(max_length=30)
+        taxi_licence_number=serializers.CharField(max_length=30)
         driver_photo= serializers.ImageField
         
     def create(self, validated_data):
@@ -49,7 +47,7 @@ class ProfileSerializer(serializers.ModelSerializer):
         (NB, we shouldn't need this normally, but there might be some edge cases where a profile needs to be manually created.)
         """
         
-        return Profile.objects.Create(**validated_data)
+        return Profile.objects.create(**validated_data)
     
     def updateCustomer(self, instance, validated_data):
         """
@@ -85,26 +83,26 @@ class ProfileSerializer(serializers.ModelSerializer):
         return instance
     
     
-    class FlightSerializer(serializers.ModelSerializer):
-        model=Flight
+class FlightSerializer(serializers.ModelSerializer):
+    model=Flight
         
-        id = serializers.IntegerField(read_only=True)
-        flight_number = serializers.CharField(max_length=10)
-        origin_airport = serializers.CharField(max_length=100)
-        origin_IATA = serializiers.CharField(max_length=10)
-        origin_terminal = serializers.CharField(max_length=5)
-        destination = serializers.CharField(max_length=100)
-        destination_terminal = serializers.CharField(max_length=5)
-        destination_IATA = serializers.CharField(max_length=10)
-        departure = serializers.DateTimeField()
-        arrival = serializers.DateTimeField()
+    id = serializers.IntegerField(read_only=True)
+    flight_number = serializers.CharField(max_length=10)
+    origin_airport = serializers.CharField(max_length=100)
+    origin_IATA = serializers.CharField(max_length=10)
+    origin_terminal = serializers.CharField(max_length=5)
+    destination = serializers.CharField(max_length=100)
+    destination_terminal = serializers.CharField(max_length=5)
+    destination_IATA = serializers.CharField(max_length=10)
+    departure = serializers.DateTimeField()
+    arrival = serializers.DateTimeField()
         
     def create(self, validated_data):
         """
         Create and return a new User Flight instance, given correctly validated data
         """
             
-        return flight.objects.Create()
+        return Flight.objects.create()
        
     def update (self, instance, validated_data):
         """
