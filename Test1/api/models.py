@@ -100,6 +100,6 @@ class Job (models.Model):
     
     
 class Job_status(models.Model):
-    job_id = models.ForeignKey(Job, on_delete=CASCADE)
+    job_id = models.ForeignKey(Job, on_delete=models.CASCADE)
     job_status = models.IntegerField( default=0)
     created_on = models.DateTimeField(auto_now_add=True)
