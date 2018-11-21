@@ -25,6 +25,7 @@ urlpatterns = [
     path('o/', include ('oauth2_provider.urls',namespace='oauth2_provider')),
     path('users/', UserList.as_view()),
     path('users/<pk>/',UserDetails.as_view()),
-    path('groups/', GroupList.as_view())
+    path('groups/', GroupList.as_view()),
+    path('register/', RegisterUser.as_view())
     
 ]

@@ -99,4 +99,7 @@ class Job (models.Model):
     total = models.FloatField() #probably (subtotal+Taxes as applicable) 
     
     
-        
+class Job_status(models.Model):
+    job_id = models.ForeignKey(Job, on_delete=CASCADE)
+    job_status = models.IntegerField( default=0)
+    created_on = models.DateTimeField(auto_now_add=True)

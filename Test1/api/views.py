@@ -1,10 +1,10 @@
 from django.contrib.auth.models import Group
+from rest_framework.views import APIView
+from rest_framework import status, generics, permissions
+from rest_framework.response import Response
 from api.serializers import UserSerializer, GroupSerializer
-from .models import User
-
-#Imports
-from rest_framework import generics, permissions
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
+from .models import User
 
 
 
@@ -30,7 +30,22 @@ class GroupList(generics.ListAPIView):
     
 
     
-    
+
+class RegisterUser(APIView):
+    permission_classes=[permissions.AllowAny]
+
+    def post(self, request, format=None):
+        serializer = UserSerializer(data=request.data)
+        
+        #check if serialized data is valid
+        if serializer.is_valid():
+            user = serializer.save()
+            
+            if user:
+                return Response(serializer.data, status=status.HTTP_201_CREATED)
+            
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
     
     
