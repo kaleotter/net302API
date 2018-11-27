@@ -82,7 +82,7 @@ DATABASES = {
    
     'default': {
         'ENGINE':'django.db.backends.mysql',
-        'NAME':'Net302_proj',
+        'NAME':'Net302',
         'USER':'djangouser',
         'PASSWORD':'password',
         'HOST':'localhost',
