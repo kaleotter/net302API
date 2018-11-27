@@ -11,6 +11,7 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 
 from .UserManager import UserManager
+from django.core.mail import send_mail
 
 
 # Create your models here.
