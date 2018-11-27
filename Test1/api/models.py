@@ -54,6 +54,8 @@ class User(AbstractBaseUser, PermissionsMixin):
         
         full_name = '%s %s' % (self.first_name, self.last_name)
         
+        return full_name
+        
         
     def email_user(self, subject, message, from_email=None, **kwargs):
         """
