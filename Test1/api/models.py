@@ -32,6 +32,8 @@ class User(AbstractBaseUser, PermissionsMixin):
     city = models.CharField(_('city'),max_length=60, blank=True)
     county = models.CharField(_('county'),max_length=60, blank=True)
     postcode = models.CharField(_('postcode'),max_length=8, blank=True)
+    phone_no = models.CharField(_('phone number'),max_length=50, blank=True)
+    mobile_no = models.CharField(_('mobile Number'),max_length=50, blank=True)
     drivers_licence_number = models.CharField(max_length=30, blank=True)
     taxi_licence_number=models.CharField(max_length=30, blank=True)
     driver_photo=models.ImageField(blank=True)

@@ -19,17 +19,17 @@ class UserSerializer (serializers.ModelSerializer):
         )
     
     password = serializers.CharField(min_length=8)
-    
+    address_1 = serializers.CharField(max_length=60)
         
     
     def create(self, validated_data):
-        user = User.objects.create_user(validated_data['email'], validated_data['password'])
+        user = User.objects.create_user(validated_data['email'], validated_data['password'], validated_data['address_1'])
             
         return user
         
     class Meta:
         model= User
-        fields=('email','first_name','last_name', 'password')
+        fields=('email','first_name','last_name', 'password','address_1')
         
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -75,3 +75,12 @@ class FlightSerializer(serializers.ModelSerializer):
         
         instance.save()
         return instance
+    
+class userProfileSerializer (serializers.ModelSerializer):
+    model = User
+    
+    id = serializers.IntegerField(read_only=True)
+    address_1 = serializers.CharField(max_length=100)
+    address_2 = serializers.CharField(max_length=100)
+    address_3 = serializers.CharField(max_length=100)
+    postcode = serializers.CharField(max_length=10)
