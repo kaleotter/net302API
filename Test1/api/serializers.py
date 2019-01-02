@@ -101,31 +101,29 @@ class FlightSerializer(serializers.ModelSerializer):
         instance.save()
         return instance
     
-class userProfileSerializer (serializers.ModelSerializer):
+class UserProfileSerializer (serializers.ModelSerializer):
     model = User
     
     id = serializers.IntegerField(read_only=True)
     dob = serializers.DateField(read_only=True)
-    title=serializers.CharField(max_length=8)
-    first_name=serializers.CharField(max_length=80)
-    last_name=serializers.CharField(max_length=80)
-    address_1 = serializers.CharField(max_length=100, required=True)
-    address_2 = serializers.CharField(max_length=100)
-    address_3 = serializers.CharField(max_length=100)
-    postcode = serializers.CharField(max_length=10, required=True)
-    county = serializers.CharField(max_length=50, required=True)
-    city = serializers.CharField(max_length=50)
-    phone_no = serializers.CharField(required=True)
-    mobile_no = serializers.CharField(required=True)
-    drivers_licence_number = serializers.CharField(max_length=20)
-    taxi_licence_number = serializers.CharField(max_length=20)
-    date_joined=serializers.DateField(read_only=True )
-    last_update= serializers.DateField()
-    driver_photo = serializers.ImageField()
+    title=serializers.CharField(max_length=8, required=False)
+    first_name=serializers.CharField(max_length=80,required=False)
+    last_name=serializers.CharField(max_length=80,required=False)
+    address_1 = serializers.CharField(max_length=100, required=False)
+    address_2 = serializers.CharField(max_length=100,required=False)
+    address_3 = serializers.CharField(max_length=100,required=False)
+    postcode = serializers.CharField(max_length=10, required=False)
+    county = serializers.CharField(max_length=50, required=False)
+    city = serializers.CharField(max_length=50, required=False)
+    phone_no = serializers.CharField(required=False)
+    mobile_no = serializers.CharField(required=False)
+
+
+        
     
-    def update_profile (self, instance, validated_data):
+    def update (self, instance, validated_data):
         instance.title= validated_data.get('title'), instance.title
-        intance.first_name = validated_data.get('first_name'), instance.first_name
+        instance.first_name = validated_data.get('first_name'), instance.first_name
         instance.last_name = validated_data.get('last_name'), instance.first_name
         instance.address_1 = validated_data.get('address_1'), instance.address_1
         instance.address_2 = validated_data.get('address_2'), instance.address_2
@@ -134,14 +132,22 @@ class userProfileSerializer (serializers.ModelSerializer):
         instance.county = validated_data.get('county'), instance.county
         instance.phone_no = validated_data.get('phone_no'),instance.phone_no
         instance.mobile_no = validated_data.get('mobile_no'), instance.mobile_no
-        instance.last_update = datetime.now(type, tz)
+        instance.last_update = datetime.now()
         
+        instance.save()
+        return instance
         
-    def update_staff_details (self, instance, validated_data):
-        instance.drivers_licence_number = validated_data.get('drivers_licence_number'), instance.drivers_licence_number
-        instance.taxi_licence_number = validated_data.get('taxi_licence_number'), instance.taxi_licence_number
-        instance.driver_photo = validated_data.get('driver_photo'), instance.driver_photo
+
+    class Meta:
+        model = User
+        fields = ('id','dob','title','first_name','last_name','address_1','address_2','address_3','postcode','county','city','phone_no','mobile_no','last_update')
         
-    
+class DriverProfileSerializer (serializers.ModelSerializer):
+
+    drivers_licence_number = serializers.CharField(max_length=20)
+    taxi_licence_number = serializers.CharField(max_length=20)
+    date_joined=serializers.DateField(read_only=True )
+    last_update= serializers.DateField()
+    driver_photo = serializers.ImageField()
     
     

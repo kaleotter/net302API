@@ -2,7 +2,7 @@ from django.contrib.auth.models import Group
 from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
-from api.serializers import UserSerializer, GroupSerializer
+from api.serializers import UserSerializer, GroupSerializer, UserProfileSerializer
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
 from .models import User
 
@@ -54,11 +54,34 @@ class UpdateProfile(APIView):
     
     def post(self, request, format=None):
         
-        user=UserSerializer(request.user)
-        return Response(user.data, status=status.HTTP_200_OK)
+        user=request.user
+        print (user.id)
+        query_set=User.objects.get(id=user.id)
+        print("we got a queryset")
+        print(query_set)
+        
+        serializer=UserProfileSerializer(query_set, data=request.data)
+        
+        
+        if serializer.is_valid():
+            
+            profile = serializer.save()
+
+            if profile:        
+                return Response(profile.data, status=status.HTTP_200_OK)
+            
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+        
+
+        
+        
+
     
     
-    
+        
     
 
     

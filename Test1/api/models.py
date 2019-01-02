@@ -18,7 +18,7 @@ from django.core.mail import send_mail
 
 class User(AbstractBaseUser, PermissionsMixin):
     email = models.EmailField(_('email address'), unique=True)
-    title =models.CharField(_('Title'), max_length=5, null=True,  blank=True)
+    title =models.CharField(_('Title'), max_length=100, null=True,  blank=True)
     first_name=models.CharField(_('first name(s)'), max_length=100, blank =True)
     last_name=models.CharField(_('last name'), max_length=100, blank = True)
     is_active=models.BooleanField(_('account active'), default=False)
@@ -32,7 +32,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     address_3=models.CharField(_('address line 3'),max_length=60, null=True, blank=True)
     city = models.CharField(_('city'),max_length=60, null=False, blank=False)
     county = models.CharField(_('county'),max_length=60, null=False, blank=False)
-    postcode = models.CharField(_('postcode'),max_length=8, blank=False, null=False)
+    postcode = models.CharField(_('postcode'),max_length=20, blank=False, null=False)
     phone_no = models.CharField(_('phone number'),max_length=50, null=True, blank=True)
     mobile_no = models.CharField(_('mobile Number'),max_length=50,null=False, blank=False)
     drivers_licence_number = models.CharField(max_length=30, null=True, blank=True)
