@@ -23,10 +23,9 @@ admin.autodiscover()
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('o/', include ('oauth2_provider.urls',namespace='oauth2_provider')),
-    path('users/', UserList.as_view()),
-    path('users/<pk>/',UserDetails.as_view()),
     path('groups/', GroupList.as_view()),
-    path('register/', RegisterUser.as_view()),
-    path('editprofile/', UpdateProfile.as_view())
-    
+    path('user/register/', RegisterUser.as_view()),
+    path('user/editprofile/', UpdateProfile.as_view()),
+    path('drivers/<id>/', GetDriver.as_view())
+    path('drivers/', GetAllDrivers.as_view)
 ]
