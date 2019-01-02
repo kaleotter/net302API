@@ -9,6 +9,7 @@ from django.contrib.auth.models import Group
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
 from .models import Car, Flight, Job, User
+from datetime import datetime
 
 
 class UserSerializer (serializers.ModelSerializer):
@@ -19,17 +20,41 @@ class UserSerializer (serializers.ModelSerializer):
         )
     
     password = serializers.CharField(min_length=8)
+    first_name=serializers.CharField(max_length=50)
+    last_name=serializers.CharField(max_length=50)
+    title=serializers.CharField(max_length=8)
     address_1 = serializers.CharField(max_length=60)
+    dob = serializers.DateField()
+    address_1 = serializers.CharField(max_length=100)
+    address_2 = serializers.CharField(max_length=100)
+    address_3 = serializers.CharField(max_length=100)
+    postcode = serializers.CharField(max_length=10)
+    county = serializers.CharField(max_length=50)
+    city = serializers.CharField(max_length=50)
+    phone_no = serializers.CharField()
+    mobile_no = serializers.CharField()
         
     
     def create(self, validated_data):
-        user = User.objects.create_user(validated_data['email'], validated_data['password'], validated_data['address_1'])
+        user = User.objects.create_user(validated_data['email'], 
+                                        validated_data['title'],
+                                        validated_data['first_name'],
+                                        validated_data['last_name'],
+                                        validated_data['address_1'],
+                                        validated_data['postcode'],
+                                        validated_data['city'],
+                                        validated_data['county'],
+                                        validated_data['mobile_no'],
+                                        validated_data['password'],
+                                        validated_data['address_2'],
+                                        validated_data['address_3'],
+                                        validated_data['phone_no'])
             
         return user
         
     class Meta:
         model= User
-        fields=('email','first_name','last_name', 'password','address_1')
+        fields=('email','title','first_name','last_name', 'password','address_1','address_2','address_3','postcode','city','county','phone_no','mobile_no','dob')
         
 
 class GroupSerializer(serializers.ModelSerializer):
@@ -80,7 +105,43 @@ class userProfileSerializer (serializers.ModelSerializer):
     model = User
     
     id = serializers.IntegerField(read_only=True)
-    address_1 = serializers.CharField(max_length=100)
+    dob = serializers.DateField(read_only=True)
+    title=serializers.CharField(max_length=8)
+    first_name=serializers.CharField(max_length=80)
+    last_name=serializers.CharField(max_length=80)
+    address_1 = serializers.CharField(max_length=100, required=True)
     address_2 = serializers.CharField(max_length=100)
     address_3 = serializers.CharField(max_length=100)
-    postcode = serializers.CharField(max_length=10)
+    postcode = serializers.CharField(max_length=10, required=True)
+    county = serializers.CharField(max_length=50, required=True)
+    city = serializers.CharField(max_length=50)
+    phone_no = serializers.CharField(required=True)
+    mobile_no = serializers.CharField(required=True)
+    drivers_licence_number = serializers.CharField(max_length=20)
+    taxi_licence_number = serializers.CharField(max_length=20)
+    date_joined=serializers.DateField(read_only=True )
+    last_update= serializers.DateField()
+    driver_photo = serializers.ImageField()
+    
+    def update_profile (self, instance, validated_data):
+        instance.title= validated_data.get('title'), instance.title
+        intance.first_name = validated_data.get('first_name'), instance.first_name
+        instance.last_name = validated_data.get('last_name'), instance.first_name
+        instance.address_1 = validated_data.get('address_1'), instance.address_1
+        instance.address_2 = validated_data.get('address_2'), instance.address_2
+        instance.address_3 = validated_data.get('address_3'), instance.address_3
+        instance.postcode = validated_data.get('postcode'), instance.postcode
+        instance.county = validated_data.get('county'), instance.county
+        instance.phone_no = validated_data.get('phone_no'),instance.phone_no
+        instance.mobile_no = validated_data.get('mobile_no'), instance.mobile_no
+        instance.last_update = datetime.now(type, tz)
+        
+        
+    def update_staff_details (self, instance, validated_data):
+        instance.drivers_licence_number = validated_data.get('drivers_licence_number'), instance.drivers_licence_number
+        instance.taxi_licence_number = validated_data.get('taxi_licence_number'), instance.taxi_licence_number
+        instance.driver_photo = validated_data.get('driver_photo'), instance.driver_photo
+        
+    
+    
+    

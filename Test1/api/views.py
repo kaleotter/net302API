@@ -46,7 +46,19 @@ class RegisterUser(APIView):
             
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        
+
+class UpdateProfile(APIView):
+    permission_classes=[permissions.IsAuthenticated]
+    
+    def post(self, request, format=None):
+        
+        user=UserSerializer(request.user)
+        return Response(user.data, status=status.HTTP_200_OK)
     
     
     
+    
+
     
