@@ -39,7 +39,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     taxi_licence_number=models.CharField(max_length=30, null=True, blank=True)
     driver_photo=models.ImageField(blank=True)
     date_joined=models.DateField(auto_now_add=True, blank=True)
-    last_update=models.DateField(auto_now_add=True, blank=True)
+    last_update=models.DateTimeField(auto_now_add=True, blank=True)
     
     objects=UserManager()
     

@@ -144,14 +144,20 @@ class UserProfileSerializer (serializers.ModelSerializer):
         
 class DriverProfileSerializer (serializers.ModelSerializer):
 
-    id = serializers.IntegerField()
+    id = serializers.IntegerField(read_only=True)
     first_name=serializers.CharField(max_length=80)
     last_name=serializers.CharField(max_length=80)
     drivers_licence_number = serializers.CharField(max_length=20)
     taxi_licence_number = serializers.CharField(max_length=20)
-    date_joined=serializers.DateField(read_only=True )
-    last_update= serializers.DateField()
-    driver_photo = serializers.ImageField()
+    last_update= serializers.DateTimeField()
+    #driver_photo = serializers.ImageField()
+    
+    def update(self, instance, validated_data):
+        instance.first_name=validated_data.get('first_name', instance.first_name)
+        instance.last_name=validated_data.get('last_name', instance.last_name)
+        instance.drivers_licence_number = validated_data.get('drivers_licence_number',instance.drivers_licence_number)
+        instance.taxi_licence_number = validated_data.get('taxi_licence_number', instance.taxi_licence_number)
+        instance.last_update=datetime.now()
     
     class Meta:
         Model=User

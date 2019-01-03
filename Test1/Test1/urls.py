@@ -26,6 +26,5 @@ urlpatterns = [
     path('groups/', GroupList.as_view()),
     path('user/register/', RegisterUser.as_view()),
     path('user/editprofile/', UpdateProfile.as_view()),
-    path('drivers/<id>/', GetDriver.as_view())
-    path('drivers/', GetAllDrivers.as_view)
+    path('drivers/<id>/', SingleDriver.as_view()),
 ]
