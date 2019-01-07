@@ -49,6 +49,8 @@ class UserSerializer (serializers.ModelSerializer):
                                         validated_data['address_2'],
                                         validated_data['address_3'],
                                         validated_data['phone_no'])
+        
+        user.groups.add(1)
             
         return user
         
