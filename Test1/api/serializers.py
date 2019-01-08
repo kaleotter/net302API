@@ -78,30 +78,38 @@ class FlightSerializer(serializers.ModelSerializer):
     destination_IATA = serializers.CharField(max_length=10)
     departure = serializers.DateTimeField()
     arrival = serializers.DateTimeField()
+    
+    class Meta:
+        model=Flight
+        
+        fields=('__all__')
         
     def create(self, validated_data):
         """
         Create and return a new User Flight instance, given correctly validated data
         """
-            
+        
         return Flight.objects.create()
        
     def update (self, instance, validated_data):
         """
         Update and return an existing Flight instance, given correctly Validated data
         """
-        instance.flight_number = validated_data.get('flight_number'),instance.flight_number
-        instance.origin_airport = validated_data.get('origin_airport'),instance.origin_airport
-        instance.origin_IATA = validated_data.get('origin_IATA'),instance.origin_IATA
-        instance.origin_terminal = validated_data.get('origin_terminal'),instance.origin_terminal
-        instance.destination = validated_data.get('destination'),instance.destination
-        instance.destination_terminal = validated_data.get('destination_terminal'),instance.destination_terminal
-        instance.destination_IATA = validated_data.get('destination_iata'), instance.destination
-        instance.departure = validated_data.get('departure'), instance.departure
-        instance.arrival = validated_data.get('arrival'), instance.arrival
+        
+        instance.flight_number = validated_data.get('flight_number',instance.flight_number)
+        instance.origin_airport = validated_data.get('origin_airport',instance.origin_airport)
+        instance.origin_IATA = validated_data.get('origin_IATA',instance.origin_IATA)
+        instance.origin_terminal = validated_data.get('origin_terminal',instance.origin_terminal)
+        instance.destination = validated_data.get('destination',instance.destination)
+        instance.destination_terminal = validated_data.get('destination_terminal',instance.destination_terminal)
+        instance.destination_IATA = validated_data.get('destination_iata', instance.destination)
+        instance.departure = validated_data.get('departure', instance.departure)
+        instance.arrival = validated_data.get('arrival', instance.arrival)
         
         instance.save()
         return instance
+    
+    
     
 class UserProfileSerializer (serializers.ModelSerializer):
     model = User
@@ -124,7 +132,7 @@ class UserProfileSerializer (serializers.ModelSerializer):
         
     
     def update (self, instance, validated_data):
-        instance.title= validated_data.get('title'), instance.title
+        instance.title= validated_data.get('title', instance.title)
         instance.first_name = validated_data.get('first_name', instance.first_name)
         instance.last_name = validated_data.get('last_name', instance.first_name)
         instance.address_1 = validated_data.get('address_1', instance.address_1)
@@ -154,14 +162,29 @@ class DriverProfileSerializer (serializers.ModelSerializer):
     last_update= serializers.DateTimeField()
     #driver_photo = serializers.ImageField()
     
+    class Meta:
+        model = User
+        fields=('id','title','first_name','last_name','drivers_licence_number', 'taxi_licence_number','last_update')
+    
     def update(self, instance, validated_data):
+        instance.title =validated_data.get('title', instance.validated_data)
         instance.first_name=validated_data.get('first_name', instance.first_name)
         instance.last_name=validated_data.get('last_name', instance.last_name)
         instance.drivers_licence_number = validated_data.get('drivers_licence_number',instance.drivers_licence_number)
         instance.taxi_licence_number = validated_data.get('taxi_licence_number', instance.taxi_licence_number)
         instance.last_update=datetime.now()
     
+    
+    
+class ShortDriverProfileSerializer (serializers.ModelSerializer):
+
+    id = serializers.IntegerField(read_only=True)
+    title=serializers.CharField()
+    first_name=serializers.CharField(max_length=80)
+    last_name=serializers.CharField(max_length=80)
+    #driver_photo = serializers.ImageField()
+    
     class Meta:
-        Model=User
-        
-        fields=('id','title','first_name','last_name','drivers_licence_number','last_update')
+        model = User
+        fields=('id','title','first_name','last_name','last_update')
+    

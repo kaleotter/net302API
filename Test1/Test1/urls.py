@@ -16,6 +16,7 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path, include
 #from django.conf.urls import url, include
+from rest_framework import routers
 from api.views import *
 
 admin.autodiscover()
@@ -25,6 +26,10 @@ urlpatterns = [
     path('o/', include ('oauth2_provider.urls',namespace='oauth2_provider')),
     path('groups/', GroupList.as_view()),
     path('user/register/', RegisterUser.as_view()),
+    #path('user/(\d+)', ViewUser.as_view()),
     path('user/editprofile/', UpdateProfile.as_view()),
-    path('drivers/<id>/', SingleDriver.as_view()),
+    path('drivers/current/', SingleDriver.as_view()),
+    path('user/search/', ListUsers.as_view())
 ]
+
+
