@@ -441,5 +441,16 @@ class CarViewSet (viewsets.ViewSet):
                 return Response(serializer.errors, HTTP_400_BAD_REQUEST)
             
         else:
-            return Response(serializer.errors, HTTP_200_OK)
+            return Response('not authorized', HTTP_401_UNAUTHORIZED)
 
+    def retrieve(self, request, pk=None):
+        '''get a booking with a specific customer and driver'''
+        
+        user = request.user
+        
+        booking = Booking.objects.get(driver=user.id, customer=pk)
+        
+        #serialize the booking
+        serializer = BookingSerializer(booking, Many=False)
+        
+        if serializer

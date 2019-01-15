@@ -214,6 +214,7 @@ class BookingSerializer (serializers.ModelSerializer):
     flight_departure = serializers.DateTimeField(required=True)
     flight_arrival = serializers.DateTimeField(required=True)
     pickup_time = serializers.DateTimeField(required=True)
+    booking_type = serializers.BooleanField(required=True)
     pickup_lat = serializers.FloatField(required=True)
     pickup_long = serializers.FloatField(required=True)
     dropoff_lat = serializers.FloatField(required=True)
@@ -230,7 +231,9 @@ class BookingSerializer (serializers.ModelSerializer):
         
     def create(self, validated_data):
         
-        return BookingModel.objects.create()
+
+        
+        return BookingModel.objects.create(**validated_data)
         
     
     def update(self, instance, validated_data):
@@ -242,6 +245,7 @@ class BookingSerializer (serializers.ModelSerializer):
         instance.flight_departure = validated_data.get('flight_departure',instance.flight_departure)
         instance.flight_arrival = validated_data.get('flight_arrival',instance.flight_arrival)
         instance.pickup_time = validated_data.get('pickup_time',instance.pickup_time)
+        instance.booking_type = validated_data.get('booking_type',instance.booking_type)
         instance.pickup_lat = validated_data.get('pickup_lat', instance.pickup_lat)
         instance.pickup_long = validated_data.get('pickup_long', instance.pickup_long)
         instance.dropoff_lat = validated_data.get('dropoff_lat', instance.dropoff_lat)
@@ -252,11 +256,28 @@ class BookingSerializer (serializers.ModelSerializer):
         instance.subtotal = validated_data.get('subtotal', instance.subtotal)
         instance.total = validated_data.get('total', instance.total)
         
+        print("here is instance.driver")
+        print(instance.driver)
+        
         instance.save()
         return instance
         
+class DriverPosSerializer(serializers.ModelSerializer):
+    
+    id= serializers.IntegerField(read_only=True)
+    driver = serializers.PrimaryKeyRelatedField(read_only=True)
+    customer= serializers.PrimaryKeyRelatedField(read_only=True)
+    driver_lat=serializers.FloatField()
+    driver_long=serializers.FloatField()
+    
+    class Meta:
+        model=BookingModel
+        fields=('id', 'driver', 'customer', 'driver_lat', 'driver_long')        
         
         
+    def update (self, instance, validated_data):
+        instance.driver_lat=validated_data.get('driver_lat')
+        instance.driver_long=validated_data.get('driver_long')
         
 class CarSerializer (serializers.ModelSerializer):
     id = serializers.IntegerField(read_only=True)
