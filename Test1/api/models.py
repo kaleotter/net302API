@@ -70,42 +70,51 @@ class User(AbstractBaseUser, PermissionsMixin):
 
   
 class Car (models.Model):
+    driver_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='car_driver')
     model = models.CharField(max_length=100)
     colour = models.CharField(max_length=50)
     number_plate = models.CharField(max_length=10)
     max_passengers= models.IntegerField()
-    photo=models.ImageField()
+    #photo=models.ImageField()
     
-    year_of_manufacture = models.DateField()
+    year_of_manufacture = models.IntegerField()
     insurance_policy = models.CharField(max_length=50)
     expiry_date = models.DateField()
     
 
     
-class Flight (models.Model):
-    flightnumber=models.CharField(max_length=10)
+'''class Flight (models.Model):
+    flight_number=models.CharField(max_length=10)
     origin = models.CharField(max_length=100, null=False)
-    origin_terminal = models.CharField(max_length=5, null=False)
     origin_IATA = models.CharField(max_length=5, null=False)
     destination = models.CharField(max_length=100, null=False)
     destination_terminal=models.CharField(max_length=5, null=False)
     destination_IATA = models.CharField(max_length=5, null=False)
     departure = models.DateTimeField(null=False)
-    arrival = models.DateTimeField(null=False)
+    arrival = models.DateTimeField(null=False)'''
     
     
-class Job (models.Model): 
-    driver_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='driver')
-    customer_id=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='customer')
-    flight_id = models.ForeignKey(Flight, on_delete=models.CASCADE)
+class Booking (models.Model): 
+    driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='booking_driver')
+    customer=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='booking_customer')
+    flight_IATA = models.CharField (max_length=10, blank=False)
+    departure_ap_code = models.CharField(max_length=4, blank=False)
+    arrival_ap_code = models.CharField(max_length=4, blank=False)
+    flight_departure = models.DateTimeField(null=True)
+    flight_arrival = models.DateTimeField(null=True)
     pickup_time = models.DateTimeField(null=False)
-    direction= models.BooleanField(null=False) #1 for a pickup and 2 for a drop-off
+    pickup_lat = models.FloatField()
+    pickup_long = models.FloatField()
+    dropoff_lat = models.FloatField()
+    dropoff_long = models.FloatField()
+    booking_number = models.CharField(max_length=8)
+    number_of_passengers = models.IntegerField( default=0)
     distance= models.FloatField() #distance in miles/km? 
     subtotal= models.FloatField() #Probably (distance*Price per distance unit*)+booking fee+extras
     total = models.FloatField() #probably (subtotal+Taxes as applicable) 
     
     
 class Job_status(models.Model):
-    job_id = models.ForeignKey(Job, on_delete=models.CASCADE)
+    job_id = models.ForeignKey(Booking, on_delete=models.CASCADE)
     job_status = models.IntegerField( default=0)
     created_on = models.DateTimeField(auto_now_add=True)

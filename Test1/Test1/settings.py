@@ -146,3 +146,12 @@ REST_FRAMEWORK={
     }
 
 AUTH_USER_MODEL= 'api.User'
+
+
+'''Email Client Settings'''
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'kaleotter@gmail.com'
+EMAIL_HOST_PASSWORD = 'G3n3sis1986'
+EMAIL_PORT = 587
+

@@ -8,8 +8,10 @@ Created on 6 Nov 2018
 from django.contrib.auth.models import Group
 from rest_framework import serializers
 from rest_framework.validators import UniqueValidator
-from .models import Car, Flight, Job, User
+from .models import Car, User
+from .models import Booking as BookingModel
 from datetime import datetime
+
 
 
 class UserSerializer (serializers.ModelSerializer):
@@ -65,7 +67,7 @@ class GroupSerializer(serializers.ModelSerializer):
         fields = ('name',)
         
     
-class FlightSerializer(serializers.ModelSerializer):
+'''class FlightSerializer(serializers.ModelSerializer):
     model=Flight
         
     id = serializers.IntegerField(read_only=True)
@@ -107,7 +109,7 @@ class FlightSerializer(serializers.ModelSerializer):
         instance.arrival = validated_data.get('arrival', instance.arrival)
         
         instance.save()
-        return instance
+        return instance'''
     
     
     
@@ -116,17 +118,17 @@ class UserProfileSerializer (serializers.ModelSerializer):
     
     id = serializers.IntegerField(read_only=True)
     dob = serializers.DateField(read_only=True)
-    title=serializers.CharField(max_length=8, required=True)
-    first_name=serializers.CharField(max_length=80,required=True)
-    last_name=serializers.CharField(max_length=80,required=True)
-    address_1 = serializers.CharField(max_length=100, required=True)
-    address_2 = serializers.CharField(max_length=100,required=True)
-    address_3 = serializers.CharField(max_length=100,required=True)
-    postcode = serializers.CharField(max_length=10, required=True)
-    county = serializers.CharField(max_length=50, required=True)
-    city = serializers.CharField(max_length=50, required=True)
-    phone_no = serializers.CharField(required=True)
-    mobile_no = serializers.CharField(required=True)
+    title=serializers.CharField(max_length=8, required=False)
+    first_name=serializers.CharField(max_length=80,required=False)
+    last_name=serializers.CharField(max_length=80,required=False)
+    address_1 = serializers.CharField(max_length=100, required=False)
+    address_2 = serializers.CharField(max_length=100,required=False)
+    address_3 = serializers.CharField(max_length=100,required=False)
+    postcode = serializers.CharField(max_length=10, required=False)
+    county = serializers.CharField(max_length=50, required=False)
+    city = serializers.CharField(max_length=50, required=False)
+    phone_no = serializers.CharField(required=False)
+    mobile_no = serializers.CharField(required=False)
 
 
         
@@ -167,7 +169,7 @@ class DriverProfileSerializer (serializers.ModelSerializer):
         fields=('id','title','first_name','last_name','drivers_licence_number', 'taxi_licence_number','last_update')
     
     def update(self, instance, validated_data):
-        instance.title =validated_data.get('title', instance.validated_data)
+        instance.title =validated_data.get('title', instance.validated_title)
         instance.first_name=validated_data.get('first_name', instance.first_name)
         instance.last_name=validated_data.get('last_name', instance.last_name)
         instance.drivers_licence_number = validated_data.get('drivers_licence_number',instance.drivers_licence_number)
@@ -188,3 +190,106 @@ class ShortDriverProfileSerializer (serializers.ModelSerializer):
         model = User
         fields=('id','title','first_name','last_name','last_update')
     
+    
+    
+class UserPermissionSerializer (serializers.ModelSerializer):
+    
+    id= serializers.IntegerField(read_only=True)
+    is_admin= serializers.BooleanField()
+    is_staff = serializers.BooleanField()
+    
+    class Meta:
+        model = User
+        fields=('id','is_admin','is_driver','is_staff','last_update')
+        
+        
+class BookingSerializer (serializers.ModelSerializer):
+    
+    id = serializers.IntegerField(read_only=True)
+    driver= serializers.PrimaryKeyRelatedField
+    customer=serializers.PrimaryKeyRelatedField
+    flight_IATA = serializers.CharField(max_length=10, required=True)
+    departure_ap_code = serializers.CharField(max_length=4, required=True)
+    arrival_ap_code = serializers.CharField(max_length=4, required=True)
+    flight_departure = serializers.DateTimeField(required=True)
+    flight_arrival = serializers.DateTimeField(required=True)
+    pickup_time = serializers.DateTimeField(required=True)
+    pickup_lat = serializers.FloatField(required=True)
+    pickup_long = serializers.FloatField(required=True)
+    dropoff_lat = serializers.FloatField(required=True)
+    dropoff_long = serializers.FloatField(required=True)
+    booking_number = serializers.CharField(max_length=8, required=True)
+    number_of_passengers = serializers.IntegerField()
+    distance = serializers.FloatField(required=False)
+    subtotal = serializers.FloatField(required=False)
+    total = serializers.FloatField(required=False)
+    
+    class Meta:
+        model = BookingModel
+        fields = ('__all__')
+        
+    def create(self, validated_data):
+        
+        return BookingModel.objects.create()
+        
+    
+    def update(self, instance, validated_data):
+        instance.driver =validated_data.get('driver',instance.driver)
+        instance.customer_id=validated_data.get('customer', instance.customer)
+        instance.flight_IATA=validated_data.get('flight_IATA',instance.flight_IATA)
+        instance.departure_ap_code = validated_data.get('departure_ap_code',instance.departure_ap_code)
+        instance.arrival_ap_code = validated_data.get('arrival_ap_code', instance.arrival_ap_code)
+        instance.flight_departure = validated_data.get('flight_departure',instance.flight_departure)
+        instance.flight_arrival = validated_data.get('flight_arrival',instance.flight_arrival)
+        instance.pickup_time = validated_data.get('pickup_time',instance.pickup_time)
+        instance.pickup_lat = validated_data.get('pickup_lat', instance.pickup_lat)
+        instance.pickup_long = validated_data.get('pickup_long', instance.pickup_long)
+        instance.dropoff_lat = validated_data.get('dropoff_lat', instance.dropoff_lat)
+        instance.dropoff_long = validated_data.get('dropoff_long', instance.dropoff_long)
+        instance.booking_number = validated_data.get('booking_number', instance.booking_number)
+        instance.number_of_passengers = validated_data.get('number_of_passengers',instance.number_of_passengers)
+        instance.distance = validated_data.get('distance', instance.distance)
+        instance.subtotal = validated_data.get('subtotal', instance.subtotal)
+        instance.total = validated_data.get('total', instance.total)
+        
+        instance.save()
+        return instance
+        
+        
+        
+        
+class CarSerializer (serializers.ModelSerializer):
+    id = serializers.IntegerField(read_only=True)
+    driver_id = serializers.PrimaryKeyRelatedField
+    model = serializers.CharField(max_length=100)
+    colour = serializers.CharField(max_length=50)
+    number_plate = serializers.CharField(max_length=10)
+    max_passengers =serializers.IntegerField()
+    #photo=serializers.ImageField()
+    year_of_manufacture = serializers.IntegerField
+    insurance_policy = serializers.CharField(max_length=50)
+    expiry_date = serializers.DateField()
+
+    class Meta:
+        model=Car
+        fields=('__all__')
+        
+        def create (self, validated_data):
+            
+            return Car.object.create()
+        
+        def update (self, instance, validated_data):
+            
+            instance.model=validated_data.get('model',instance.model)
+            instance.driver_id = validated_data.get('driver_id', instance.driver_id)
+            instance.colour=validated_data.get('colour', instance.colour)
+            instance.number_plate=validated_data.get('number_plate', instance.number_plate)
+            instance.max_passengers = validated_data.get('max_passengers', instance.max_passengers)
+            #instance.photo = validated_data.get('photo', instance.photo)
+            instance.year_of_manufacture = validated_data.get('year_of_manufacture',instance.year_of_manufacture)
+            instance.insurance_policy = validated_data.get('insurance_policy', instance.insurance_policy)
+            instance.expiry_date = validated_data.get('expiry_date', instance.expiry_date)
+            
+            instance.save()
+            return instance
+        

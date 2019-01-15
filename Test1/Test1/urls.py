@@ -15,11 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-#from django.conf.urls import url, include
+from django.conf.urls import url, include
 from rest_framework import routers
 from api.views import *
 
 admin.autodiscover()
+
+
+router = routers.DefaultRouter()
+router.register(r'users', CustomerViewSet, basename='users')
+router.register(r'booking',BookingViewSet, basename = 'booking')
+router.register(r'car', CarViewSet, basename='car')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -31,5 +37,7 @@ urlpatterns = [
     path('drivers/current/', SingleDriver.as_view()),
     path('user/search/', ListUsers.as_view())
 ]
+
+urlpatterns +=router.urls
 
 

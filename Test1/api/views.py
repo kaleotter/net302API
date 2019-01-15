@@ -3,17 +3,20 @@ from rest_framework.views import APIView
 from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from api.serializers import UserSerializer, GroupSerializer, UserProfileSerializer,\
-    DriverProfileSerializer, ShortDriverProfileSerializer
+    DriverProfileSerializer, ShortDriverProfileSerializer, BookingSerializer,\
+    CarSerializer
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
-from .models import User
+from .models import *
 from django.db.models.query import QuerySet
+from django.shortcuts import get_object_or_404
 from rest_framework.status import HTTP_404_NOT_FOUND, HTTP_200_OK,\
-    HTTP_401_UNAUTHORIZED
+    HTTP_401_UNAUTHORIZED, HTTP_400_BAD_REQUEST
 from rest_framework.parsers import JSONParser
 from rest_framework import viewsets
-from rest_framework.permissions import IsAuthenticated
-from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.decorators import action, permission_classes
 import requests
+from api.helpers import RandomStringGen, GMapsAddressConverter
 
 
 # Create your views here.
@@ -183,31 +186,260 @@ class ManyDrivers (APIView):
 
         
         
+    
+        
+    
+    
+class CustomerViewSet (viewsets.ViewSet):
+    """
+    Handles most user functions for Customers
+    """    
+    
+    def get_permissions(self):
+        
+        
+        if self.action =='update':
+            permission_classes = [permissions.IsAuthenticated]
+            
+        elif self.action =='current':
+            permission_classes = [permissions.IsAuthenticated] 
+            
+        else:
+            permission_classes = [permissions.AllowAny]
+    
+        return [permission() for permission in permission_classes]
+    
+    
+    def create (self, request):
+        serializer = UserSerializer(data=request.data)
+        
+        #check if serialized data is valid
+        if serializer.is_valid():
+            user = serializer.save()
+            
+            if user:
+                return Response("Your account has been created Successfully!", status=status.HTTP_201_CREATED)
+            
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+    @action(detail=False, methods=['get'])
+    def current (self, request, pk=None):
+        """get the current user profile data for an authenticated user"""
+        
+        user=request.user
+        
+        if user: #just make sure we have data for the user here
+            serializer=UserProfileSerializer(user)
+            
+            return Response(serializer.data, HTTP_200_OK)
+        
+        else:
+            return Response("userProfile not found", HTTP_404_NOT_FOUND)
+        
+    def update (self, request, pk=None):
+        
+        #get the authenticated user
+        user=request.user
+        
+        data=request.data
+        
+        serializer = UserProfileSerializer(user, data=data)
+        
+        if serializer.is_valid():
+            serializer.save()
+            
+            if user:
+                return Response("user profile updated successfully", HTTP_200_OK)
+            
+        else:
+            return Response(serializer.errors, HTTP_400_BAD_REQUEST)
 
-class Flights(APIView):
+class DriverViewSet(viewsets.ViewSet):
+    
+    def update (self, request, pk=None):
+        user=request.user 
+            
+        '''first check that we have a driver, if not, then we don't have an authorised
+        user and we should return unauthorised'''
+        
+        if user.is_driver == 1:
+            #serialize the data and then check that it is valid
+            
+            serializer = DriverProfileSerializer(user, data=request.data)
+            
+            if serializer.is_valid:
+                #then save the updates and return message and 200
+                
+                serializer.save()
+                
+                return Response("Driver profile Successfully updated!")
+            
+            else: #There was a problem with the serializer, return the errors
+                
+                return Response(serializer.errors, HTTP_400_BAD_REQUEST)
+            
+        else:
+            
+            return Response("Unauthorised", HTTP_401_UNAUTHORIZED)
+        
+        
+'''class StaffFunctionsViewSet (viewsets.ViewSet):
+    
+    
+    @action(detail = True, methods=['put'])
+    def activate_account(self, request, pk=None):
+        
+        user=request.user'''
+        
+        
+class BookingViewSet(viewsets.ViewSet):
+    
     permission_classes=[permissions.IsAuthenticated]
     
-    def post(self, request, format=None):
-        '''If the user adds a flight, then we need to check if a flight with the 
-        correct flight number, destination and arrival times already exists.
-        If not then we'll get the flight data from a remote api'''
+    def create (self, request):
+        
+        user = request.user
+        
+        data = request.data
         
         
-        #first we want to see if the data is in the database
-        flightdata= request.data
-        query_set = Flights.objects.all
+        #first do the address translations
         
-        '''json input data should be formatted as
-            {
-            "flight_number":"somenumber"
-            "departuew_airport":"someplace"
-            "departure_date": "YYYY-MM-DD",
-            }'''
+        pickup =GMapsAddressConverter.to_coords(data['pickup_address_1'],
+                                       data['pickup_address_2'], 
+                                       data['pickup_address_3'], 
+                                       data['pickup_city'], 
+                                       data['pickup_postcode'])
         
-        #work out weather we have a flight with the provided data
+        if isinstance(pickup, dict):
         
-        query_set=
+            data.pop('pickup_address_1', None)
+            data.pop('pickup_address_2', None)
+            data.pop('pickup_address_3', None)
+            data.pop('pickup_postcode', None)
+            data.pop('pickup_city', None)
+            
+            print(data)
+            
+            data['pickup_lat']=pickup['lat']
+            data['pickup_long']=pickup['lng']
+            
+        else:
+            return Response(pickup, HTTP_400_BAD_REQUEST)
+            
+            print(data)
+        dropoff = GMapsAddressConverter.to_coords(data['dropoff_address_1'], 
+                                        data['dropoff_address_2'], 
+                                        data['dropoff_address_3'],
+                                        data['dropoff_city'],
+                                        data['dropoff_postcode'])
+        
+        
+            
+        if isinstance(dropoff,dict):
+        
+            data.pop('dropoff_address_1', None)
+            data.pop('dropoff_address_2', None)
+            data.pop('dropoff_address_3', None)
+            data.pop('dropoff_postcode', None)
+            data.pop('dropoff_city', None)
+            
+            data['dropoff_lat']=dropoff['lat']
+            data['dropoff_long']=dropoff['lng']   
+        
+        
+        else:
+            return Response('problem connecting to google api', HTTP_400_BAD_REQUEST)
+        
+        # now generate booking code
+        
+        data['booking_number'] = RandomStringGen.generate()
+        
+        #apply userid to customerid
+        data['customer'] = user.id 
+        data['driver'] = user.id
+        
+        print("here is the data")
+        print (data)
+        print(" ")
+        
+        #now serialize the data
+        serializer = BookingSerializer(data=data)
+        
+        if serializer.is_valid():
+            print(serializer.validated_data)
+            
+            serializer.save()
+            
+            return Response('booking created successfully', HTTP_200_OK)
+        
+        else:
+            return Response(serializer.errors, HTTP_400_BAD_REQUEST)
+        
+        
+        
+class CarViewSet (viewsets.ViewSet):
+    permission_classes =[permissions.IsAuthenticated]
     
+    def create(self, request):
+    
+        user = request.user
+        data = request.data
+    
+        if user.is_driver == 1:
+    
+            #add driver_id to the data
+            data['driver_id']= user.id
+            
+            print("here is the data")
+            print (data)
+            print(" ")
+            #serialize the data
+            serializer = CarSerializer(data=data)
         
-    
-    
+            
+        
+            if serializer.is_valid():
+            
+                print(serializer.validated_data)
+                serializer.save()
+                return Response("car added to database!", HTTP_200_OK)
+                
+            else:
+                
+                return Response(serializer.errors, HTTP_400_BAD_REQUEST)
+        
+        else:
+            return Response('user not authorized', HTTP_401_UNAUTHORIZED)
+        
+        
+    def update(self, request, pk=None):
+        
+        user=request.user
+        data =request.data
+        
+        #get the car to be updated
+        car=Car.objects.get(id=pk)
+        
+        
+        data['driver_id']=user.id
+        
+        if user.is_driver == 1:
+            
+            
+            serializer = CarSerializer(car, data=request.data)
+            
+            
+            if serializer.is_valid():
+                
+                serializer.save()
+                
+                return Response("car details updated successfully", HTTP_200_OK)
+            
+            else:
+                return Response(serializer.errors, HTTP_400_BAD_REQUEST)
+            
+        else:
+            return Response(serializer.errors, HTTP_200_OK)
+
