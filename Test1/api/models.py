@@ -70,7 +70,7 @@ class User(AbstractBaseUser, PermissionsMixin):
 
   
 class Car (models.Model):
-    driver_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='car_driver')
+    driver_id = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
     model = models.CharField(max_length=100)
     colour = models.CharField(max_length=50)
     number_plate = models.CharField(max_length=10)
@@ -95,8 +95,8 @@ class Car (models.Model):
     
     
 class Booking (models.Model): 
-    driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='booking_driver')
-    customer=models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='booking_customer')
+    driver = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE,null=True, blank=True, related_name='driver_bookings')
+    customer=models.ForeignKey(User, on_delete=models.CASCADE, related_name='customer_bookings')
     flight_IATA = models.CharField (max_length=10, blank=False)
     departure_ap_code = models.CharField(max_length=4, blank=False)
     arrival_ap_code = models.CharField(max_length=4, blank=False)

@@ -4,7 +4,7 @@ from rest_framework import status, generics, permissions
 from rest_framework.response import Response
 from api.serializers import UserSerializer, GroupSerializer, UserProfileSerializer,\
     DriverProfileSerializer, ShortDriverProfileSerializer, BookingSerializer,\
-    CarSerializer
+    CarSerializer, UserBookingsSerializer
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope, TokenHasScope
 from .models import *
 from django.db.models.query import QuerySet
@@ -382,13 +382,43 @@ class BookingViewSet(viewsets.ViewSet):
         
         user = request.user
         
-        booking = Booking.objects.get(id=pk)
+        booking=Booking.objects.get(id=pk)
+
+        
+        print("we serialized")
         
         #serialize the booking
-        serializer = BookingSerializer(booking, Many=False)
+        serializer = BookingSerializer(booking, many=False)
         
-        return Response(serializer, HTTP_200_OK)
+        return Response(serializer.data, HTTP_200_OK)
     
+    
+    @action(detail=False, methods=['get'])
+    def usr_booking(self, request, pk=None):
+        
+        #gets all bookings for the logged in user
+        
+        user=request.user
+        
+        if (user.is_driver!=1):
+            usr_bookings=User.objects.get(id=user.id)
+            
+            serializer = UserBookingsSerializer(usr_bookings)
+            
+            return Response(serializer.data, HTTP_200_OK)
+        
+        else:
+            return Response('unauthorised', HTTP_401_UNAUTHORIZED)
+        
+    @action(detail=False, methods=['get'])
+    def availiable (self, request, pk=None):
+        
+        user=request.user
+        
+        data=User.objects.all()
+        
+        data=data.filter(booking__driver_isnull=False)    
+        
     def list (self, request):
         
         user=request.user
@@ -407,7 +437,7 @@ class BookingViewSet(viewsets.ViewSet):
         serializer = BookingSerializer(data, many=True)
         
         
-        return Response(serializer.data, HTTP_200_OK)
+        return Response(sc.data, HTTP_200_OK)
         
         
 class CarViewSet (viewsets.ViewSet):

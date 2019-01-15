@@ -316,3 +316,23 @@ class CarSerializer (serializers.ModelSerializer):
             instance.save()
             return instance
         
+        
+        
+        
+        
+class UserBookingsSerializer(serializers.ModelSerializer):
+    customer_bookings = BookingSerializer(read_only=True, many=True)
+        
+    class Meta:
+        model = User
+        fields=('id','first_name','last_name','customer_bookings')
+        
+class DriverBookingsSerializer(serializers.ModelSerializer):
+    driver_bookings =BookingSerializer(read_only=True, many=True)
+    
+    class Meta:
+        model=User
+        fields=('id', 'driver_bookings')
+        
+        
+        
