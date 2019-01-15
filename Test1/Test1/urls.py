@@ -24,7 +24,7 @@ admin.autodiscover()
 
 router = routers.DefaultRouter()
 router.register(r'users', CustomerViewSet, basename='users')
-router.register(r'booking',BookingViewSet, basename = 'booking')
+router.register(r'booking',BookingViewSet, basename='bookings')
 router.register(r'car', CarViewSet, basename='car')
 
 urlpatterns = [

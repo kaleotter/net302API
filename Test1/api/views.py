@@ -376,7 +376,38 @@ class BookingViewSet(viewsets.ViewSet):
         
         else:
             return Response(serializer.errors, HTTP_400_BAD_REQUEST)
+    
+    def retrieve(self, request, pk=None):
+        '''get a booking with a specific customer and driver'''
         
+        user = request.user
+        
+        booking = Booking.objects.get(id=pk)
+        
+        #serialize the booking
+        serializer = BookingSerializer(booking, Many=False)
+        
+        return Response(serializer, HTTP_200_OK)
+    
+    def list (self, request):
+        
+        user=request.user
+        
+        data=Booking.objects.all()
+        search=request.query_params
+        #now we can filter the results
+        
+        if search['job_search']==0:
+            #we know we're looking for accepted jobs
+            
+            data=data.filter(driver__exact=user.id)
+            
+        
+        
+        serializer = BookingSerializer(data, many=True)
+        
+        
+        return Response(serializer.data, HTTP_200_OK)
         
         
 class CarViewSet (viewsets.ViewSet):
@@ -443,14 +474,5 @@ class CarViewSet (viewsets.ViewSet):
         else:
             return Response('not authorized', HTTP_401_UNAUTHORIZED)
 
-    def retrieve(self, request, pk=None):
-        '''get a booking with a specific customer and driver'''
-        
-        user = request.user
-        
-        booking = Booking.objects.get(driver=user.id, customer=pk)
-        
-        #serialize the booking
-        serializer = BookingSerializer(booking, Many=False)
-        
-        if serializer
+
+    

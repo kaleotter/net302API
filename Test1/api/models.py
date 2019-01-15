@@ -103,7 +103,7 @@ class Booking (models.Model):
     flight_departure = models.DateTimeField(null=True)
     flight_arrival = models.DateTimeField(null=True)
     pickup_time = models.DateTimeField(null=False)
-    booking_type = models.BooleanField(default=0) #if 0 then this is a dropoff at an airport, if 1 then it is a pickup from an airport
+    booking_type = models.BooleanField(default=False) #if 0 then this is a dropoff at an airport, if 1 then it is a pickup from an airport
     pickup_lat = models.FloatField()
     pickup_long = models.FloatField()
     dropoff_lat = models.FloatField()
@@ -115,8 +115,4 @@ class Booking (models.Model):
     total = models.FloatField(blank = True, null=True) #probably (subtotal+Taxes as applicable)
     driver_lat = models.FloatField(blank=True)
     driver_long=models.FloatField(blank=True)
-    
-class Job_status(models.Model):
-    job_id = models.ForeignKey(Booking, on_delete=models.CASCADE)
-    job_status = models.IntegerField( default=0)
-    created_on = models.DateTimeField(auto_now_add=True)
+    job_status=models.SmallIntegerField(default =0)
